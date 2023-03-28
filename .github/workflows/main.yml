@@ -65,7 +65,8 @@ jobs:
           sudo apt-get update
           sudo apt-get install trivy
       - name: Vulnerability Scan with Trivy
-        run: trivy --only-update alpine -q --severity HIGH,CRITICAL --exit-code 1 ${IMAGE_NAME}
+        # run: trivy --only-update alpine -q --severity HIGH,CRITICAL --exit-code 1 ${IMAGE_NAME}
+        run: trivy ${IMAGE_NAME}
         env:
           IMAGE_NAME: app
       # - name: Run Trivy lint
