@@ -1,0 +1,156 @@
+name: Pre-Merge Checks
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  pre-merge:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v2
+
+      - name: Install Node.js and Yarn
+        uses: actions/setup-node@v2
+        with:
+          node-version: '14.x'
+          cache: 'yarn'
+
+      - name: Install Dependencies
+        run: yarn install
+
+      - name: Lint with ESLint
+        run: yarn run lint
+
+      - name: Build docker image
+        run: docker build -t ${IMAGE_NAME} . --file Dockerfile
+        env:
+          IMAGE_NAME: app
+
+      - name: Install dockle
+        run: |
+          VERSION=$(curl --silent "https://api.github.com/repos/goodwithtech/dockle/releases/latest" | \
+          grep '"tag_name":' | \
+          sed -E 's/.*"v([^"]+)".*/\1/' \
+          )
+          curl -L -o dockle.deb https://github.com/goodwithtech/dockle/releases/download/v${VERSION}/dockle_${VERSION}_Linux-64bit.deb
+          sudo dpkg -i dockle.deb
+          rm dockle.deb
+      - name: Check image with dockle
+        run: dockle ${IMAGE_NAME}
+        env:
+          IMAGE_NAME: app
+
+      # - name: Run dockle lint
+      #   run: |
+      #     dockle -o json -f dockle-report.json image:tag
+
+      # - name: Upload dockle report
+      #   uses: actions/upload-artifact@v2
+      #   with:
+      #     name: dockle-report
+      #     path: dockle-report.json
+
+      - name: Install Trivy
+        run: |
+          sudo apt-get install apt-transport-https gnupg
+          wget -qO - https://aquasecurity.github.io/trivy-repo/deb/public.key | sudo apt-key add -
+          echo deb https://aquasecurity.github.io/trivy-repo/deb $(lsb_release -cs) main | sudo tee -a /etc/apt/sources.list.d/trivy.list
+          sudo apt-get update
+          sudo apt-get install trivy
+      - name: Vulnerability Scan with Trivy
+        run: trivy --only-update alpine -q --severity HIGH,CRITICAL --exit-code 1 ${IMAGE_NAME}
+        env:
+          IMAGE_NAME: app
+      # - name: Run Trivy lint
+      #   run: |
+      #     trivy -f json -o trivy-report.json image:tag
+      # - name: Upload trivy report
+      #   uses: actions/upload-artifact@v2
+      #   with:
+      #     name: trivy-report
+      #     path: trivy-report.json
+
+      # - name: Generate coverage report
+      #   run: yarn test:cov
+
+      # - name: Check coverage
+      #   run: |
+      #     COVERAGE_THRESHOLD=99
+      #     ACTUAL_COVERAGE=$(cat coverage/lcov.info | npx coveralls | grep 'Statements' | awk '{print $3}' | sed 's/%//')
+      #     if [ "${ACTUAL_COVERAGE}" -lt "${COVERAGE_THRESHOLD}" ]; then
+      #       echo "Code coverage is below the required threshold of ${COVERAGE_THRESHOLD}%"
+      #       exit 1
+      #     fi
+      # run: |
+      #   total_coverage=$(cat coverage/lcov.info | npx coveralls | grep Total | awk '{print $3}')
+      #   if [ $(echo "$total_coverage >= 99" | bc -l) -eq 0 ]; then
+      #     echo "Coverage is below 99%: $total_coverage%"
+      #     exit 1
+      #   fi
+      # - name: Check Code Coverage
+      #   run: |
+      #     # Get the coverage percentage as an integer
+      #     COVERAGE=$(grep -Po "(?<=statements\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ )[0-9]+" coverage/lcov.info)
+
+      #     # Check if coverage is less than 99%
+      #     if [ "$COVERAGE" -lt "99" ]; then
+      #       echo "Code coverage is less than 99%"
+      #       exit 1
+      #     fi
+      # - name: Run tests with coverage
+      #   run: yarn test -- --coverage --coverageReporters=text-lcov | coveralls
+      # - name: Check code coverage
+      #   uses: codecov/codecov-action@v3
+      #   with:
+      #     token: ${{ secrets.CODECOV_TOKEN }}
+      #     fail_ci_if_error: true
+      #     coverage_threshold: 90
+
+      # - name: Build app
+      #   run: yarn build
+#     - name: Lint with Dockle
+#       uses: docker/build-push-action@v2
+#       with:
+#         context: .
+#         file: ./Dockerfile
+#         push: false
+#         labels: |
+#           org.opencontainers.image.title='My App'
+#           org.opencontainers.image.description='My App Description'
+#           org.opencontainers.image.source='https://github.com/my-org/my-app'
+#       id: dockle
+#       args: dockle -l warn
+
+#     - name: Lint with Trivy
+#       run: |
+#         git clone https://github.com/aquasecurity/trivy-ci.git && cd trivy-ci
+#         docker build -t trivy-ci .
+#         docker run --rm -v /var/run/docker.sock:/var/run/docker.sock -v ${PWD}:/workdir trivy-ci
+
+#     - name: Run Tests and Check Coverage
+#       run: |
+#         yarn test --coverage --watchAll=false
+#         bash <(curl -s https://codecov.io/bash) -t "${{ secrets.CODECOV_TOKEN }}"
+
+#     - name: Report Coverage Status
+#       uses: actions/upload-artifact@v2
+#       with:
+#         name: coverage-report
+#         path: coverage
+
+#     - name: Check Coverage Threshold
+#       run: |
+#         yarn add -D istanbul threshold-summary
+#         istanbul check-coverage --lines 20
+
+#     - name: Check Coverage of Sub-Projects
+#       run: |
+#         yarn workspaces foreach --include "packages/*" --parallel "yarn run test --coverage"
+#         yarn workspaces foreach --include "packages/*" --parallel "bash <(curl -s https://codecov.io/bash) -t '${{ secrets.CODECOV_TOKEN }}'"
