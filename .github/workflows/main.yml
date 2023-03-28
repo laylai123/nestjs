@@ -62,13 +62,13 @@ jobs:
       - name: Generate coverage report
         run: yarn test:cov
 
-      - name: Check coverage
-        run: |
-          coverage=$(cat coverage/lcov.info | yarn coveralls)
-          if [[ "$coverage" < "50" ]]; then
-            echo "Test coverage is below 50% ($coverage%), failing the build."
-            exit 1
-          fi
+      # - name: Check coverage
+      #   run: |
+      #     coverage=$(cat coverage/lcov.info | yarn coveralls)
+      #     if [[ "$coverage" < "50" ]]; then
+      #       echo "Test coverage is below 50% ($coverage%), failing the build."
+      #       exit 1
+      #     fi
       #   run: |
       #     COVERAGE_THRESHOLD=99
       #     ACTUAL_COVERAGE=$(cat coverage/lcov.info | npx coveralls | grep 'Statements' | awk '{print $3}' | sed 's/%//')
@@ -89,16 +89,15 @@ jobs:
       #     fi
       # - name: Run tests with coverage
       #   run: yarn test -- --coverage --coverageReporters=text-lcov | coveralls
-      # - name: Check code coverage
-      #   uses: codecov/codecov-action@v3
-      #   with:
-      #     token: ${{ secrets.CODECOV_TOKEN }}
-      #     fail_ci_if_error: true
-      #     coverage_threshold: 90
+      - name: Check code coverage
+        uses: codecov/codecov-action@v3
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
+          fail_ci_if_error: true
+          coverage_threshold: 90
 
       # - name: Build app
       #   run: yarn build
-
 #     - name: Run Tests and Check Coverage
 #       run: |
 #         yarn test --coverage --watchAll=false
