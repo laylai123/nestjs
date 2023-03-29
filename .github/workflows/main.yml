@@ -69,8 +69,8 @@ jobs:
         run: yarn test:cov
       - name: Get coverage percentage
         run: |
-        COVERAGE=$(grep "Statements" coverage/lcov.info | awk '{print $3}')
-        echo "COVERAGE=$COVERAGE" >> $GITHUB_ENV
+          COVERAGE=$(grep "Statements" coverage/lcov.info | awk '{print $3}')
+          echo "COVERAGE=$COVERAGE" >> $GITHUB_ENV
       # - name: Save coverage report
       #   uses: actions/upload-artifact@v2
       #   with:
