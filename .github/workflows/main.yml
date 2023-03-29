@@ -1,4 +1,5 @@
-name: Pre-Merge Checks 
+name: Pre-Merge Checks
+
 on:
   push:
     branches:
@@ -67,7 +68,7 @@ jobs:
       - name: Generate coverage report
         run: yarn test:cov
       - name: Get coverage percentage
-      run: |
+        run: |
         COVERAGE=$(grep "Statements" coverage/lcov.info | awk '{print $3}')
         echo "COVERAGE=$COVERAGE" >> $GITHUB_ENV
       # - name: Save coverage report
