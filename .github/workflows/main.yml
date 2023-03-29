@@ -21,6 +21,12 @@ jobs:
         with:
           node-version: '14.x'
           cache: 'yarn'
+      - uses: actions/cache@v2
+        with:
+          path: ~/.cache/yarn
+          key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-yarn-
 
       - name: Install Dependencies
         run: yarn install
@@ -66,7 +72,6 @@ jobs:
         with:
           name: coverage-report
           path: ./coverage
-
 #     - name: Run Tests and Check Coverage
 #       run: |
 #         yarn test --coverage --watchAll=false
