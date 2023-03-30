@@ -25,4 +25,4 @@ jobs:
         sudo mv dockle /usr/local/bin/
 
     - name: Run Dockle
-      run: dockle my-docker-image
+      run: dockle --timeout 120s my-docker-image
