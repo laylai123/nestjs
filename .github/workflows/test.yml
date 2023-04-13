@@ -1,6 +1,8 @@
 name: My Workflow
 
 on:
+  push:
+    branches: [ main ]
   workflow_dispatch:
     inputs:
       environment:
@@ -8,9 +10,9 @@ on:
         required: true
         default: 'production'
         options:
-        - production
-        - staging
-        - development
+          - production
+          - staging
+          - development
 jobs:
   deploy:
     runs-on: ubuntu-latest
@@ -20,12 +22,13 @@ jobs:
 
       - name: Deploy to environment
         run: |
+          echo ${{ env.environment }}
           if [ "${{ env.environment }}" == "production" ]; then
             echo "111111"
           elif [ "${{ env.environment }}" == "staging" ]; then
-            deploy-to-staging.sh
-          else
             echo "22222"
+          else
+            echo "33333"
           fi
         env:
           ENVIRONMENT: ${{ env.environment }}
