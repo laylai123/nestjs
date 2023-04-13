@@ -39,9 +39,9 @@ jobs:
       - name: Set another environment variable
         run: |
           if [ "${{ inputs.environment }}" = "prod" ]; then
-            echo "ANOTHER_ENV=prod_value" >> $GITHUB_ENV
+            echo "ANOTHER_ENV=prod_value1111"
           elif [ "${{ inputs.environment }}" = "stg" ]; then
-            echo "ANOTHER_ENV=stg_value" >> $GITHUB_ENV
+            echo "ANOTHER_ENV=stg_value2222"
           fi
       - name: Build and deploy
         run: |
