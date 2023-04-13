@@ -1,34 +1,34 @@
 name: My Workflow
 
 on:
-  push:
-    branches: [ main ]
   workflow_dispatch:
     inputs:
-      environment:
-        description: 'Environment to deploy to'
+      logLevel:
+        description: 'Log level'
         required: true
-        default: 'production'
+        default: 'warning'
+        type: choice
         options:
-          - production
-          - staging
-          - development
-jobs:
-  deploy:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v2
+        - info
+        - warning
+        - debug
+      print_tags:
+        description: 'True to print to STDOUT'
+        required: true
+        type: boolean
+      tags:
+        description: 'Test scenario tags'
+        required: true
+        type: string
+      environment:
+        description: 'Environment to run tests against'
+        type: environment
+        required: true
 
-      - name: Deploy to environment
-        run: |
-          echo ${{ env.environment }}
-          if [ "${{ env.environment }}" == "production" ]; then
-            echo "111111"
-          elif [ "${{ env.environment }}" == "staging" ]; then
-            echo "22222"
-          else
-            echo "33333"
-          fi
-        env:
-          ENVIRONMENT: ${{ env.environment }}
+jobs:
+  print-tag:
+    runs-on: ubuntu-latest
+    if:  ${{ inputs.print_tags }} 
+    steps:
+      - name: Print the input tag to STDOUT
+        run: echo  The tags are ${{ inputs.tags }} 
