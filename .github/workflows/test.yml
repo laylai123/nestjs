@@ -9,9 +9,9 @@ on:
         default: 'warning'
         type: choice
         options:
-        - info
-        - warning
-        - debug
+          - info
+          - warning
+          - debug
       print_tags:
         description: 'True to print to STDOUT'
         required: true
@@ -25,14 +25,26 @@ on:
         required: true
         type: choice
         options:
-        - prod
-        - stg
-        - dev
+          - prod
+          - stg
+          - dev
 
 jobs:
   print-tag:
     runs-on: ubuntu-latest
-    if:  ${{ inputs.print_tags }} 
+    if: ${{ inputs.print_tags }}
     steps:
       - name: Print the input tag to STDOUT
-        run: echo  The tags are ${{ inputs.tags }} 
+        run: echo  The tags are ${{ inputs.tags }}
+      - name: Set another environment variable
+        run: |
+          if [ "${{ inputs.environment }}" = "prod" ]; then
+            echo "ANOTHER_ENV=prod_value" >> $GITHUB_ENV
+          elif [ "${{ inputs.environment }}" = "stg" ]; then
+            echo "ANOTHER_ENV=stg_value" >> $GITHUB_ENV
+          fi
+      - name: Build and deploy
+        run: |
+          echo "111111"
+          echo "ANOTHER_ENV=${{ env.ANOTHER_ENV }}"
+          # Run other commands that use ANOTHER_ENV variable
