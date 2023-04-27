@@ -38,7 +38,7 @@ jobs:
         run: docker build -t ${IMAGE_NAME} --build-arg TEST1=${TEST1} . --file Dockerfile
         env:
           IMAGE_NAME: app
-          TEST1: ${{ secrets.TOKEN11 }}
+          TEST1: ${{ secrets.TOKEN }}
 
       - name: Install dockle
         run: |
