@@ -35,7 +35,7 @@ jobs:
         run: yarn run lint
 
       - name: Build docker image
-        run: docker build -t ${IMAGE_NAME} . --file Dockerfile
+        run: docker build -t ${IMAGE_NAME} --build-arg TEST1=arg_value . --file Dockerfile
         env:
           IMAGE_NAME: app
 
