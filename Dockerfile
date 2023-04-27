@@ -1,6 +1,8 @@
 # Use the official Node.js 14 image as the base
 FROM node:14
 
+ARG TEST1
+ENV TEST2=$TEST1
 # Set the working directory to /app
 WORKDIR /app
 
