@@ -65,30 +65,3 @@ jobs:
         env:
           IMAGE_NAME: app
 
-      - name: Generate coverage report
-        run: yarn test:cov
-      # - name: Save coverage report
-      #   uses: actions/upload-artifact@v2
-      #   with:
-      #     name: coverage-report
-      #     path: ./coverage
-#     - name: Run Tests and Check Coverage
-#       run: |
-#         yarn test --coverage --watchAll=false
-#         bash <(curl -s https://codecov.io/bash) -t "${{ secrets.CODECOV_TOKEN }}"
-
-#     - name: Report Coverage Status
-#       uses: actions/upload-artifact@v2
-#       with:
-#         name: coverage-report
-#         path: coverage
-
-#     - name: Check Coverage Threshold
-#       run: |
-#         yarn add -D istanbul threshold-summary
-#         istanbul check-coverage --lines 20
-
-#     - name: Check Coverage of Sub-Projects
-#       run: |
-#         yarn workspaces foreach --include "packages/*" --parallel "yarn run test --coverage"
-#         yarn workspaces foreach --include "packages/*" --parallel "bash <(curl -s https://codecov.io/bash) -t '${{ secrets.CODECOV_TOKEN }}'"
