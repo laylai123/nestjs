@@ -1,8 +1,7 @@
 # Use the official Node.js 14 image as the base
 FROM node:14
 
-ENV TEST2=TEST1
-RUN echo "The ENV variable value is $TEST2"
+ENV SECRET_TOKEN=${SECRET_TOKEN}
 
 # Set the working directory to /app
 WORKDIR /app
