@@ -3,6 +3,8 @@ FROM node:14
 
 ARG TEST1
 ENV TEST2=$TEST1
+RUN echo "The ENV variable value is $TEST2"
+
 # Set the working directory to /app
 WORKDIR /app
 
